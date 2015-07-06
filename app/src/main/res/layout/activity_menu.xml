@@ -15,13 +15,165 @@
         android:id="@+id/imageView"
         android:layout_gravity="center"
         style="@style/FullscreenTheme"
-        android:background="#ff000000" />
+        android:background="#333333"
+        android:src="@drawable/intro01"/>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginTop="0dp">
+
+        <TextView
+            android:layout_width="280dp"
+            android:layout_height="100dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/font_grey"
+            android:textSize="30dp"
+            android:text=""
+            android:id="@+id/top_left"
+            android:gravity="center"
+            android:layout_marginLeft="0dp"
+            />
+
+        <TextView
+            android:layout_width="280dp"
+            android:layout_height="100dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/font_grey"
+            android:textSize="30dp"
+            android:text=""
+            android:id="@+id/top_center"
+            android:gravity="center"
+            android:layout_toRightOf="@+id/top_left"
+            android:layout_marginLeft="50dp"/>
+
+        <TextView
+            android:layout_width="280dp"
+            android:layout_height="100dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/font_grey"
+            android:textSize="30dp"
+            android:text=""
+            android:id="@+id/top_right"
+            android:gravity="center"
+            android:layout_toRightOf="@+id/top_center"
+            android:layout_marginLeft="50dp"/>
+
+    </RelativeLayout>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginTop="250dp">
+
+        <TextView
+            android:layout_width="280dp"
+            android:layout_height="100dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/font_grey"
+            android:textSize="30dp"
+            android:text=""
+            android:id="@+id/option_left"
+            android:gravity="center"
+            android:layout_marginLeft="0dp"
+            />
+
+        <TextView
+            android:layout_width="280dp"
+            android:layout_height="100dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/font_grey"
+            android:textSize="30dp"
+            android:text=""
+            android:id="@+id/option_center"
+            android:gravity="center"
+            android:layout_toRightOf="@+id/option_left"
+            android:layout_marginLeft="50dp"/>
+
+        <TextView
+            android:layout_width="280dp"
+            android:layout_height="100dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/font_grey"
+            android:textSize="30dp"
+            android:text=""
+            android:id="@+id/option_right"
+            android:gravity="center"
+            android:layout_toRightOf="@+id/option_center"
+            android:layout_marginLeft="50dp"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginTop="270dp">
+
+        <TextView
+            android:layout_width="600dp"
+            android:layout_height="100dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/font_white"
+            android:textSize="43dp"
+            android:text=""
+            android:id="@+id/selected"
+            android:layout_marginLeft="300dp"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginTop="490dp">
+
+        <TextView
+            android:layout_width="300dp"
+            android:layout_height="100dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/font_grey"
+            android:textSize="30dp"
+            android:text=""
+            android:id="@+id/bottom_left"
+            android:gravity="center"
+            android:layout_marginLeft="10dp"
+            />
+
+        <TextView
+            android:layout_width="300dp"
+            android:layout_height="100dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/font_grey"
+            android:textSize="30dp"
+            android:text=""
+            android:id="@+id/bottom_center"
+            android:gravity="center"
+            android:layout_toRightOf="@+id/bottom_left"/>
+
+        <TextView
+            android:layout_width="300dp"
+            android:layout_height="100dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/font_grey"
+            android:textSize="30dp"
+            android:text=""
+            android:id="@+id/bottom_right"
+            android:gravity="center"
+            android:layout_toRightOf="@+id/bottom_center"/>
+
+    </RelativeLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
+        android:text=""
         android:id="@+id/textView"
         android:layout_gravity="left|center_vertical" />
 </FrameLayout>

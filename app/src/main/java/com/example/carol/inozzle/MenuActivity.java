@@ -5,8 +5,6 @@ import com.squareup.picasso.Picasso;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,22 +16,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.impl.client.BasicResponseHandler;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.sql.ClientInfoStatus;
 
 
 /**
@@ -75,6 +62,19 @@ public class MenuActivity extends Activity {
     public String pictoshow;
     public Handler cHandler;
 
+    public static TextView left;
+    public static TextView center;
+    public static TextView right;
+
+    public static TextView topLeft;
+    public static TextView topCenter;
+    public static TextView topRight;
+
+    public static TextView bottomLeft;
+    public static TextView bottomCenter;
+    public static TextView bottomRight;
+
+
     //screen elements
     TextView test;
 
@@ -86,7 +86,22 @@ public class MenuActivity extends Activity {
 
         contentView = findViewById(R.id.imageView);
 
+        left = (TextView)findViewById(R.id.option_left);
+        center = (TextView)findViewById(R.id.option_center);
+        right = (TextView)findViewById(R.id.option_right);
+
+        topLeft = (TextView)findViewById(R.id.top_left);
+        topCenter = (TextView)findViewById(R.id.top_center);
+        topRight = (TextView)findViewById(R.id.top_right);
+
+        bottomLeft = (TextView)findViewById(R.id.bottom_left);
+        bottomCenter = (TextView)findViewById(R.id.bottom_center);
+        bottomRight = (TextView)findViewById(R.id.bottom_right);
+
         test = (TextView) findViewById(R.id.textView);
+
+        //runTest();
+
 
         cHandler = new Handler(Looper.getMainLooper()) {
             @Override
@@ -136,8 +151,8 @@ public class MenuActivity extends Activity {
     }
 
     public void setPicture(String s) {
-        Log.i("ManiUI","Set Picture " + s);
-        test.setText(s);
+        Log.i("ManiUI", "Set Picture " + s);
+        //test.setText(s);
 
         switch (s) {
             case "call":
@@ -147,115 +162,486 @@ public class MenuActivity extends Activity {
                 replace(R.drawable.navigasstation);
                 break;
             case "-1":
-                replace(R.drawable.intro);
+                resetDisplay();
+                replace(R.drawable.intro01);
                 break;
             case "0x":
-                replace(R.drawable.menu0x);
+                //telephone
+                resetDisplay();
+                resetTextColorMain();
+                replace(R.drawable.call);
+                editTextLabelsTop("","","");
+                editTextLabelsMain("Redial", "Missed Calls", "Favorites");
                 break;
             case "1x":
-                replace(R.drawable.menu1x);
+                //media
+                resetDisplay();
+                resetTextColorMain();
+                replace(R.drawable.media);
+                //replace(R.drawable.media);
+                editTextLabelsTop("","","");
+                editTextLabelsMain("CD", "External Devices", "Radio");
                 break;
             case "2x":
-                replace(R.drawable.menu2x);
+                //navigation
+                //replace(R.drawable.menu2x);
+                //replace(R.drawable.nav);
+                resetDisplay();
+                resetTextColorMain();
+                replace(R.drawable.nav);
+                editTextLabelsTop("", "", "");
+                editTextLabelsMain("Previous Destinations", "Favorites", "Points of Interest");
                 break;
             case "00":
-                replace(R.drawable.menu00);
+                //redial
+                //replace(R.drawable.menu00);
+                resetTextColorMain();
+                resetTextColorTop();
+                highlightTextLabel(R.id.option_left);
+                editTextLabelsTop("Sonja Süßmilch", "Mrs. Robinson", "Blixa Reed");
                 break;
             case "01":
-                replace(R.drawable.menu01);
+                //missed calls
+                //replace(R.drawable.menu01);
+                resetTextColorMain();
+                resetTextColorTop();
+                highlightTextLabel(R.id.option_center);
+                editTextLabelsTop("Donald Morris", "Mrs. Robinson", "+49 6666 66666");
                 break;
             case "02":
-                replace(R.drawable.menu02);
+                //favorites (telephone)
+                //replace(R.drawable.menu02);
+                resetTextColorMain();
+                resetTextColorTop();
+                highlightTextLabel(R.id.option_right);
+                editTextLabelsTop("J. H. Joplin", "Mrs. Robinson", "Ing. J. Shiwago");
                 break;
             case "10":
-                replace(R.drawable.menu10);
+                //CD
+                //replace(R.drawable.menu10);
+                resetTextColorMain();
+                resetTextColorTop();
+                highlightTextLabel(R.id.option_left);
+                editTextLabelsTop("Start from beginning", "Continue", "Random");
                 break;
             case "11":
-                replace(R.drawable.menu11);
+                //External Devices
+                //replace(R.drawable.menu11);
+                resetTextColorMain();
+                resetTextColorTop();
+                highlightTextLabel(R.id.option_center);
+                editTextLabelsTop("USB", "AUX", "Bluetooth");
                 break;
             case "12":
-                replace(R.drawable.menu12);
+                //Radio
+                //replace(R.drawable.menu12);
+                resetTextColorMain();
+                resetTextColorTop();
+                highlightTextLabel(R.id.option_right);
+                editTextLabelsTop("Sight Ways 33.3", "Zero Zone 00.0", "Mercury 666.6");
                 break;
             case "20":
-                replace(R.drawable.menu20);
+                //Prevoious destinations
+                //replace(R.drawable.menu20);
+                resetTextColorMain();
+                resetTextColorTop();
+                highlightTextLabel(R.id.option_left);
+                editTextLabelsTop("66 Battery Ave, NY 66666", "1 North End Ave, NY 10001", "0 Rue Courbet, 75116 Paris");
                 break;
             case "21":
-                replace(R.drawable.menu21);
+                //Favorites (Nav)
+                //replace(R.drawable.menu21);
+                resetTextColorMain();
+                resetTextColorTop();
+                highlightTextLabel(R.id.option_center);
+                editTextLabelsTop("55 5th Ave, NY 10055", "00 Cheers Ave, NY 10000", "137 Leo Road, QLD 4880");
                 break;
             case "22":
-                replace(R.drawable.menu21);
+                //Points of interest
+                //replace(R.drawable.menu21);
+                resetTextColorMain();
+                resetTextColorTop();
+                highlightTextLabel(R.id.option_right);
+                editTextLabelsTop("Gas Station", "Coffee Shop", "Liquid Store");
                 break;
             case "000":
-                replace(R.drawable.menu000);
+                //Sonja Süßmilch
+                //replace(R.drawable.menu000);
+                replace(R.drawable.call01);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_left);
                 break;
             case "001":
-                replace(R.drawable.menu001);
+                //Mrs. Robinson
+                //replace(R.drawable.menu001);
+                replace(R.drawable.call02);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_center);
                 break;
             case "002":
-                replace(R.drawable.menu002);
+                //Blixa Reed
+                //replace(R.drawable.menu002);
+                replace(R.drawable.call03);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_right);
                 break;
             case "010":
-                replace(R.drawable.menu010);
+                //Donald Morris
+                //replace(R.drawable.menu010);
+                replace(R.drawable.call01);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_left);
                 break;
             case "011":
-                replace(R.drawable.menu011);
+                //Mrs. Robinson
+                //replace(R.drawable.menu011);
+                replace(R.drawable.call02);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_center);
                 break;
             case "012":
-                replace(R.drawable.menu012);
+                //+49 6666 66666
+                //replace(R.drawable.menu012);
+                replace(R.drawable.call03);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_right);
+                break;
+            case "020":
+                //J. H. Joplin
+                replace(R.drawable.call01);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_left);
+                break;
+            case "021":
+                //Mrs. Robinson
+                replace(R.drawable.call02);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_center);
+                break;
+            case "022":
+                //Ing. J. Shiwago
+                replace(R.drawable.call03);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_right);
                 break;
             case "100":
-                replace(R.drawable.menu100);
+                //Start from beginning
+                //replace(R.drawable.menu100);
+                replace(R.drawable.media01);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_left);
                 break;
             case "101":
-                replace(R.drawable.menu101);
+                //Continue
+                //replace(R.drawable.menu101);
+                replace(R.drawable.media02);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_center);
                 break;
             case "102":
-                replace(R.drawable.menu102);
+                //Random
+                //replace(R.drawable.menu102);
+                replace(R.drawable.media03);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_right);
                 break;
             case "110":
-                replace(R.drawable.menu110);
+                //USB
+                //replace(R.drawable.menu110);
+                replace(R.drawable.media01);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_left);
                 break;
             case "111":
-                replace(R.drawable.menu111);
+                //AUX
+                //replace(R.drawable.menu111);
+                replace(R.drawable.media02);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_center);
                 break;
             case "112":
-                replace(R.drawable.menu112);
+                //Bluetooth
+                //replace(R.drawable.menu112);
+                replace(R.drawable.media03);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_right);
                 break;
             case "120":
-                replace(R.drawable.menu120);
+                //Sight Ways 33.3
+                //replace(R.drawable.menu120);
+                replace(R.drawable.media01);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_left);
                 break;
             case "121":
-                replace(R.drawable.menu121);
+                //Zero Zone 00.0
+                //replace(R.drawable.menu121);
+                replace(R.drawable.media02);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_center);
                 break;
             case "122":
-                replace(R.drawable.menu122);
+                //Mercury 666.6
+                //replace(R.drawable.menu122);
+                replace(R.drawable.media03);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_right);
                 break;
             case "200":
-                replace(R.drawable.menu200);
+                //66 Battery Ave, NY 66666
+                //replace(R.drawable.menu200);
+                replace(R.drawable.nav01);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_left);
                 break;
             case "201":
-                replace(R.drawable.menu201);
+                //1 North End Ave, NY 10001
+                //replace(R.drawable.menu201);
+                replace(R.drawable.nav02);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_center);
                 break;
             case "202":
-                replace(R.drawable.menu202);
+                //0 Rue Courbet, 75116 Paris
+                //replace(R.drawable.menu202);
+                replace(R.drawable.nav03);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_right);
                 break;
             case "210":
-                replace(R.drawable.menu210);
+                //55 5th Ave, NY 10055
+                //replace(R.drawable.menu210);
+                replace(R.drawable.nav01);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_left);
                 break;
             case "211":
-                replace(R.drawable.menu211);
+                //00 Cheers Ave, NY 10000
+                //replace(R.drawable.menu211);
+                replace(R.drawable.nav02);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_center);
                 break;
             case "212":
-                replace(R.drawable.menu212);
+                //137 Leo Road, QLD 4880
+                //replace(R.drawable.menu212);
+                replace(R.drawable.nav03);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_right);
                 break;
             case "220":
-                replace(R.drawable.menu220);
+                //Gas Station
+                //replace(R.drawable.menu220);
+                replace(R.drawable.nav01);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_left);
                 break;
             case "221":
-                replace(R.drawable.menu221);
+                //Coffee Shop
+                //replace(R.drawable.menu221);
+                replace(R.drawable.nav02);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_center);
                 break;
             case "222":
-                replace(R.drawable.menu222);
+                //Liquid Store
+                //replace(R.drawable.menu222);
+                replace(R.drawable.nav03);
+                resetTextColorTop();
+                highlightTextLabel(R.id.top_right);
+                break;
+            case "000x":
+                //select Sonja Süßmilch
+                replace(R.drawable.finalcall);
+                //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
+                finalSelection("Calling Sonja Süßmilch");
+                //highlightTextLabel(R.id.bottom_left);
+
+                break;
+            case "001x":
+                //select Mrs. Robinson
+                replace(R.drawable.finalcall);
+                //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
+                finalSelection("Calling Mrs. Robinson");
+                //highlightTextLabel(R.id.bottom_left);
+
+                break;
+            case "002x":
+                //Blixa Reed
+                replace(R.drawable.finalcall);
+                //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
+                finalSelection("Calling Blixa Reed");
+                //highlightTextLabel(R.id.bottom_left);
+
+                break;
+            case "010x":
+                //Donald Morris
+                replace(R.drawable.finalcall);
+                //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
+                finalSelection("Calling Donald Morris");
+                //highlightTextLabel(R.id.bottom_center);
+                break;
+            case "011x":
+                //Mrs. Robinson
+                replace(R.drawable.finalcall);
+                //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
+                finalSelection("Calling Mrs. Robinson");
+                //highlightTextLabel(R.id.bottom_center);
+                break;
+            case "012x":
+                //+49 6666 66666
+                replace(R.drawable.finalcall);
+                //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
+                finalSelection("Calling +49 6666 66666");
+                //highlightTextLabel(R.id.bottom_center);
+                break;
+            case "020x":
+                //J. H. Joplin
+                replace(R.drawable.finalcall);
+                //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
+                finalSelection("Calling J. H. Joplin");
+                //highlightTextLabel(R.id.bottom_right);
+                break;
+            case "021x":
+                //Mrs. Robinson
+                replace(R.drawable.finalcall);
+                //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
+                finalSelection("Calling Mrs. Robinson");
+                //highlightTextLabel(R.id.bottom_right);
+                break;
+            case "022x":
+                //Ing. J. Shiwago
+                replace(R.drawable.finalcall);
+                //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
+                finalSelection("Calling Ing. J. Shiwago");
+                //highlightTextLabel(R.id.bottom_right);
+                break;
+            case "100x":
+                //Start from beginning
+                replace(R.drawable.finalmedia);
+                //editTextLabelsBottom("CD", "External Devices", "Radio");
+                finalSelection("Start from beginning");
+                //highlightTextLabel(R.id.bottom_left);
+                break;
+            case "101x":
+                //Continue
+                replace(R.drawable.finalmedia);
+                //editTextLabelsBottom("CD", "External Devices", "Radio");
+                finalSelection("Continue");
+                //highlightTextLabel(R.id.bottom_left);
+                break;
+            case "102x":
+                //Random
+                replace(R.drawable.finalmedia);
+                //editTextLabelsBottom("CD", "External Devices", "Radio");
+                finalSelection("Random");
+                //highlightTextLabel(R.id.bottom_left);
+                break;
+            case "110x":
+                //USB
+                replace(R.drawable.finalmedia);
+                //editTextLabelsBottom("CD", "External Devices", "Radio");
+                finalSelection("USB");
+                //highlightTextLabel(R.id.bottom_center);
+                break;
+            case "111x":
+                //AUX
+                replace(R.drawable.finalmedia);
+                //editTextLabelsBottom("CD", "External Devices", "Radio");
+                finalSelection("AUX");
+                //highlightTextLabel(R.id.bottom_center);
+                break;
+            case "112x":
+                //Bluetooth
+                replace(R.drawable.finalmedia);
+                //editTextLabelsBottom("CD", "External Devices", "Radio");
+                finalSelection("Bluetooth");
+                //highlightTextLabel(R.id.bottom_center);
+                break;
+            case "120x":
+                //Sight Ways 33.3
+                replace(R.drawable.finalmedia);
+                //editTextLabelsBottom("CD", "External Devices", "Radio");
+                finalSelection("Sight Ways 33.3");
+                //highlightTextLabel(R.id.bottom_right);
+                break;
+            case "121x":
+                //Zero Zone 00.0
+                //replace(R.drawable.menu121);
+                replace(R.drawable.finalmedia);
+                //editTextLabelsBottom("CD", "External Devices", "Radio");
+                finalSelection("Zero Zone 00.0");
+                //highlightTextLabel(R.id.bottom_right);
+                break;
+            case "122x":
+                //Mercury 666.6
+                replace(R.drawable.finalmedia);
+                //editTextLabelsBottom("CD", "External Devices", "Radio");
+                finalSelection("Mercury 666.6");
+                //highlightTextLabel(R.id.bottom_right);
+                break;
+            case "200x":
+                //66 Battery Ave, NY 66666
+                replace(R.drawable.finalmedia);
+                //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
+                finalSelection("Navigating to 66 Battery Ave, NY 66666");
+                //highlightTextLabel(R.id.bottom_left);
+                break;
+            case "201x":
+                //1 North End Ave, NY 10001
+                replace(R.drawable.finalnav);
+                //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
+                finalSelection("Navigating to 1 North End Ave, NY 10001");
+                //highlightTextLabel(R.id.bottom_left);
+                break;
+            case "202x":
+                //0 Rue Courbet, 75116 Paris
+                replace(R.drawable.finalnav);
+                //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
+                finalSelection("Navigating to 0 Rue Courbet, 75116 Paris");
+                //highlightTextLabel(R.id.bottom_left);
+                break;
+            case "210x":
+                //55 5th Ave, NY 10055
+                replace(R.drawable.finalnav);
+                //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
+                finalSelection("Navigating to 55 5th Ave, NY 10055");
+                //highlightTextLabel(R.id.bottom_center);
+                break;
+            case "211x":
+                //00 Cheers Ave, NY 10000
+                replace(R.drawable.finalnav);
+                //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
+                finalSelection("Navigating to 00 Cheers Ave, NY 10000");
+                //highlightTextLabel(R.id.bottom_center);
+                break;
+            case "212x":
+                //137 Leo Road, QLD 4880
+                replace(R.drawable.finalnav);
+                //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
+                finalSelection("Navigating to 137 Leo Road, QLD 4880");
+                //highlightTextLabel(R.id.bottom_center);
+                break;
+            case "220x":
+                //Gas Station
+                replace(R.drawable.finalnav);
+                //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
+                finalSelection("Navigating to Gas Station");
+                //highlightTextLabel(R.id.bottom_right);
+                break;
+            case "221x":
+                //Coffee Shop
+                replace(R.drawable.finalnav);
+                //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
+                finalSelection("Navigating to Coffee Shop");
+                //highlightTextLabel(R.id.bottom_right);
+                break;
+            case "222x":
+                //Liquid Store
+                replace(R.drawable.finalnav);
+                //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
+                finalSelection("Navigating to Liquid Store");
+                //highlightTextLabel(R.id.bottom_right);
                 break;
             default:
                 Log.e("Main Handler","No Such Code");
@@ -266,6 +652,7 @@ public class MenuActivity extends Activity {
     private void replace(int res) {
         Picasso.with(this).load(res).fit().noFade().into((ImageView) contentView);
     }
+
 
     private void readFromServer() {
 
@@ -366,7 +753,99 @@ public class MenuActivity extends Activity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
+    public void highlightTextLabel(int identifier) {
+        TextView label = (TextView)findViewById(identifier);
+        label.setTextColor(getResources().getColor(R.color.font_white));
+    }
+    public void resetTextColorMain() {
+        left.setTextColor(getResources().getColor(R.color.font_grey));
+        center.setTextColor(getResources().getColor(R.color.font_grey));
+        right.setTextColor(getResources().getColor(R.color.font_grey));
+    }
 
+    public void resetTextColorTop() {
+        topLeft.setTextColor(getResources().getColor(R.color.font_grey));
+        topCenter.setTextColor(getResources().getColor(R.color.font_grey));
+        topRight.setTextColor(getResources().getColor(R.color.font_grey));
+    }
+    public void resetTextColorBottom() {
+        bottomLeft.setTextColor(getResources().getColor(R.color.font_grey));
+        bottomCenter.setTextColor(getResources().getColor(R.color.font_grey));
+        bottomRight.setTextColor(getResources().getColor(R.color.font_grey));
+    }
+    public void editTextLabelsMain(String newLeft, String newCenter, String newRight) {
+        left.setText(newLeft);
+        center.setText(newCenter);
+        right.setText(newRight);
+    }
+    public void editTextLabelsTop(String newLeft, String newCenter, String newRight) {
+        topLeft.setText(newLeft);
+        topCenter.setText(newCenter);
+        topRight.setText(newRight);
+    }
+    public void editTextLabelsBottom(String newLeft, String newCenter, String newRight) {
+        bottomLeft.setText(newLeft);
+        bottomCenter.setText(newCenter);
+        bottomRight.setText(newRight);
+    }
+
+    public void finalSelection(String selection) {
+        editTextLabelsMain("", "", "");
+        editTextLabelsTop("", "", "");
+        TextView selectionText = (TextView)findViewById(R.id.selected);
+        selectionText.setText(selection);
+
+    }
+    public void resetDisplay() {
+        TextView selectionText = (TextView)findViewById(R.id.selected);
+        selectionText.setText("");
+        editTextLabelsBottom("", "", "");
+    }
+
+
+    public void runTest() {
+        // Execute some code after 2 seconds have passed
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                setPicture("0x");
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        setPicture("01");
+
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+                                setPicture("02");
+
+                                Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    public void run() {
+                                        setPicture("021");
+
+                                        Handler handler = new Handler();
+                                        handler.postDelayed(new Runnable() {
+                                            public void run() {
+                                                setPicture("022");
+
+                                                Handler handler = new Handler();
+                                                handler.postDelayed(new Runnable() {
+                                                    public void run() {
+                                                        setPicture("021");
+                                                    }
+                                                }, 2000);
+                                            }
+                                        }, 2000);
+                                    }
+                                }, 2000);
+                            }
+                        }, 2000);
+                    }
+                }, 2000);
+            }
+        }, 2000);
+    }
 }
-
 
