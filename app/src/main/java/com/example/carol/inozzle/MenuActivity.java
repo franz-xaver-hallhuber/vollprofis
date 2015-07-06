@@ -163,6 +163,8 @@ public class MenuActivity extends Activity {
                 break;
             case "-1":
                 resetDisplay();
+                editTextLabelsTop("", "", "");
+                editTextLabelsMain("","","");
                 replace(R.drawable.intro01);
                 break;
             case "0x":
