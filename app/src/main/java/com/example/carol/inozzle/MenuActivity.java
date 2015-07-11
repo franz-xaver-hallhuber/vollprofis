@@ -5,6 +5,10 @@ import com.squareup.picasso.Picasso;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.view.animation.TranslateAnimation;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +19,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.media.MediaPlayer;
+import android.app.AlertDialog;
+import android.content.Context;
+
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -58,9 +66,9 @@ public class MenuActivity extends Activity {
      */
     private SystemUiHider mSystemUiHider;
     public static View contentView;
-    private Log logger;
-    public String pictoshow;
+    public Integer number;
     public Handler cHandler;
+    final Context context = this;
 
     public static TextView left;
     public static TextView center;
@@ -74,6 +82,18 @@ public class MenuActivity extends Activity {
     public static TextView bottomCenter;
     public static TextView bottomRight;
 
+    public static MediaPlayer radio1;
+    public static MediaPlayer radio2;
+    public static MediaPlayer route;
+    public static MediaPlayer dial;
+    public static Integer xCurrentPos;
+    public static Integer yCurrentPos;
+    public static ImageView logoFocus;
+    public static String code;
+    public static boolean translate;
+
+
+
 
     //screen elements
     TextView test;
@@ -82,7 +102,12 @@ public class MenuActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        translate = true;
         setContentView(R.layout.activity_menu);
+        code = "";
+        logoFocus = (ImageView) findViewById(R.id.hand);
+        xCurrentPos = logoFocus.getLeft();
+        yCurrentPos = logoFocus.getTop();
 
         contentView = findViewById(R.id.imageView);
 
@@ -98,10 +123,15 @@ public class MenuActivity extends Activity {
         bottomCenter = (TextView)findViewById(R.id.bottom_center);
         bottomRight = (TextView)findViewById(R.id.bottom_right);
 
+        radio1 = MediaPlayer.create(getApplicationContext(), R.raw.radio1);
+        radio2 = MediaPlayer.create(getApplicationContext(), R.raw.radio2);
+        dial = MediaPlayer.create(getApplicationContext(), R.raw.dial);
+        route = MediaPlayer.create(getApplicationContext(), R.raw.route);
+
+
         test = (TextView) findViewById(R.id.textView);
 
-        //runTest();
-
+        runTest();
 
         cHandler = new Handler(Looper.getMainLooper()) {
             @Override
@@ -109,8 +139,12 @@ public class MenuActivity extends Activity {
                 String serverInput = (String) msg.getData().getString("message");
 
                 if (null != serverInput) {
-                    setPicture(serverInput);
+                    if(!code.equals(serverInput)) {
+                        setPicture(serverInput);
+                    }
+                    code = serverInput;
                 }
+
 
             }
         };
@@ -147,11 +181,29 @@ public class MenuActivity extends Activity {
             }
         });
 
-        readFromServer();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder .setTitle(R.string.dialog)
+                .setItems(R.array.numbers_array, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        number = which;
+                        Log.i("select", "selected index: " + which);
+                        readFromServer();
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+
+
     }
 
     public void setPicture(String s) {
         Log.i("ManiUI", "Set Picture " + s);
+        logoFocus.setVisibility(View.GONE);
+        logoFocus.clearAnimation();
+        translate = false;
         //test.setText(s);
 
         switch (s) {
@@ -164,8 +216,11 @@ public class MenuActivity extends Activity {
             case "-1":
                 resetDisplay();
                 editTextLabelsTop("", "", "");
-                editTextLabelsMain("","","");
-                replace(R.drawable.intro01);
+                editTextLabelsMain("", "", "");
+                replace(R.drawable.intro);
+                logoFocus.setVisibility(View.VISIBLE);
+                translate = true;
+                translateHand();
                 break;
             case "0x":
                 //telephone
@@ -208,7 +263,7 @@ public class MenuActivity extends Activity {
                 resetTextColorMain();
                 resetTextColorTop();
                 highlightTextLabel(R.id.option_center);
-                editTextLabelsTop("Donald Morris", "Mrs. Robinson", "+49 6666 66666");
+                editTextLabelsTop("Donald Morris", "+49 6666 66666", "Mrs. Robinson");
                 break;
             case "02":
                 //favorites (telephone)
@@ -264,7 +319,7 @@ public class MenuActivity extends Activity {
                 resetTextColorMain();
                 resetTextColorTop();
                 highlightTextLabel(R.id.option_right);
-                editTextLabelsTop("Gas Station", "Coffee Shop", "Liquid Store");
+                editTextLabelsTop("Gas Station", "Coffee Shop", "Liquor Store");
                 break;
             case "000":
                 //Sonja Süßmilch
@@ -458,6 +513,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
                 finalSelection("Calling Sonja Süßmilch");
                 //highlightTextLabel(R.id.bottom_left);
+                dial.start();
 
                 break;
             case "001x":
@@ -466,7 +522,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
                 finalSelection("Calling Mrs. Robinson");
                 //highlightTextLabel(R.id.bottom_left);
-
+                dial.start();
                 break;
             case "002x":
                 //Blixa Reed
@@ -474,7 +530,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
                 finalSelection("Calling Blixa Reed");
                 //highlightTextLabel(R.id.bottom_left);
-
+                dial.start();
                 break;
             case "010x":
                 //Donald Morris
@@ -482,6 +538,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
                 finalSelection("Calling Donald Morris");
                 //highlightTextLabel(R.id.bottom_center);
+                dial.start();
                 break;
             case "011x":
                 //Mrs. Robinson
@@ -489,6 +546,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
                 finalSelection("Calling Mrs. Robinson");
                 //highlightTextLabel(R.id.bottom_center);
+                dial.start();
                 break;
             case "012x":
                 //+49 6666 66666
@@ -496,6 +554,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
                 finalSelection("Calling +49 6666 66666");
                 //highlightTextLabel(R.id.bottom_center);
+                dial.start();
                 break;
             case "020x":
                 //J. H. Joplin
@@ -503,6 +562,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
                 finalSelection("Calling J. H. Joplin");
                 //highlightTextLabel(R.id.bottom_right);
+                dial.start();
                 break;
             case "021x":
                 //Mrs. Robinson
@@ -510,6 +570,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
                 finalSelection("Calling Mrs. Robinson");
                 //highlightTextLabel(R.id.bottom_right);
+                dial.start();
                 break;
             case "022x":
                 //Ing. J. Shiwago
@@ -517,6 +578,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Redial", "Missed Calls", "Favorites");
                 finalSelection("Calling Ing. J. Shiwago");
                 //highlightTextLabel(R.id.bottom_right);
+                dial.start();
                 break;
             case "100x":
                 //Start from beginning
@@ -566,6 +628,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("CD", "External Devices", "Radio");
                 finalSelection("Sight Ways 33.3");
                 //highlightTextLabel(R.id.bottom_right);
+                radio2.start();
                 break;
             case "121x":
                 //Zero Zone 00.0
@@ -574,12 +637,14 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("CD", "External Devices", "Radio");
                 finalSelection("Zero Zone 00.0");
                 //highlightTextLabel(R.id.bottom_right);
+                radio1.start();
                 break;
             case "122x":
                 //Mercury 666.6
                 replace(R.drawable.finalmedia);
                 //editTextLabelsBottom("CD", "External Devices", "Radio");
                 finalSelection("Mercury 666.6");
+                radio2.start();
                 //highlightTextLabel(R.id.bottom_right);
                 break;
             case "200x":
@@ -588,6 +653,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
                 finalSelection("Navigating to 66 Battery Ave, NY 66666");
                 //highlightTextLabel(R.id.bottom_left);
+                route.start();
                 break;
             case "201x":
                 //1 North End Ave, NY 10001
@@ -595,6 +661,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
                 finalSelection("Navigating to 1 North End Ave, NY 10001");
                 //highlightTextLabel(R.id.bottom_left);
+                route.start();
                 break;
             case "202x":
                 //0 Rue Courbet, 75116 Paris
@@ -602,6 +669,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
                 finalSelection("Navigating to 0 Rue Courbet, 75116 Paris");
                 //highlightTextLabel(R.id.bottom_left);
+                route.start();
                 break;
             case "210x":
                 //55 5th Ave, NY 10055
@@ -609,6 +677,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
                 finalSelection("Navigating to 55 5th Ave, NY 10055");
                 //highlightTextLabel(R.id.bottom_center);
+                route.start();
                 break;
             case "211x":
                 //00 Cheers Ave, NY 10000
@@ -616,6 +685,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
                 finalSelection("Navigating to 00 Cheers Ave, NY 10000");
                 //highlightTextLabel(R.id.bottom_center);
+                route.start();
                 break;
             case "212x":
                 //137 Leo Road, QLD 4880
@@ -623,6 +693,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
                 finalSelection("Navigating to 137 Leo Road, QLD 4880");
                 //highlightTextLabel(R.id.bottom_center);
+                route.start();
                 break;
             case "220x":
                 //Gas Station
@@ -630,6 +701,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
                 finalSelection("Navigating to Gas Station");
                 //highlightTextLabel(R.id.bottom_right);
+                route.start();
                 break;
             case "221x":
                 //Coffee Shop
@@ -637,6 +709,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
                 finalSelection("Navigating to Coffee Shop");
                 //highlightTextLabel(R.id.bottom_right);
+                route.start();
                 break;
             case "222x":
                 //Liquid Store
@@ -644,6 +717,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("Previous Destinations", "Favorites", "Points of Interest");
                 finalSelection("Navigating to Liquid Store");
                 //highlightTextLabel(R.id.bottom_right);
+                route.start();
                 break;
             default:
                 Log.e("Main Handler","No Such Code");
@@ -660,56 +734,66 @@ public class MenuActivity extends Activity {
 
         Thread th = new Thread(new Runnable() {
 
-            String ip = "192.168.188.27";
-            int port = 5005;
-
-            Socket client;
-            BufferedReader inS;
-
-            ByteArrayOutputStream bos;
-
-            String inLine;
-
             @Override
             public void run() {
-                try {
-                    Log.i("Client","Attempt Connect");
-
-                    bos = new ByteArrayOutputStream(512);
-                    client = new Socket(ip, port);
-                    Log.i("Client", "Created Socket");
-
-                    //inS = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                    InputStream inStr = client.getInputStream();
-                    Log.i("Client", "Create Buffered Reader");
-
-                    Log.i("Client", "Start receiving data");
-
-                    byte[] temp = new byte[512];
-                    int bytesread;
-
-                    while ((bytesread = inStr.read(temp)) != -1) {
-                        bos.write(temp, 0, bytesread);
-                        Log.i("Received from Server:", bos.toString("utf-8"));
-                        String res = bos.toString("utf-8");
-                        bos.reset();
-
-                        if (res != null && res != "") {
-                            Message msg = cHandler.obtainMessage();
-                            Bundle b = new Bundle();
-                            b.putString("message",res);
-                            msg.setData(b);
-                            cHandler.sendMessage(msg);
-                        }
+                while(true){
+                    if(!establishConnection()){
+                        establishConnection();
                     }
-
-                    Log.i("Client","Connection Close");
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
+
             }
         });
         th.start();
+    }
+
+    public boolean establishConnection() {
+        String ip = "192.168.0.10" + number;
+        Log.i("IP ","Current IP is " + ip);
+        int port = 5005;
+
+        Socket client;
+        BufferedReader inS;
+
+        ByteArrayOutputStream bos;
+
+        String inLine;
+
+        try {
+            Log.i("Client","Attempt Connect");
+
+            bos = new ByteArrayOutputStream(512);
+            client = new Socket(ip, port);
+            Log.i("Client", "Created Socket");
+
+            //inS = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            InputStream inStr = client.getInputStream();
+            Log.i("Client", "Create Buffered Reader");
+
+            Log.i("Client", "Start receiving data");
+
+            byte[] temp = new byte[512];
+            int bytesread;
+
+            while ((bytesread = inStr.read(temp)) != -1) {
+                bos.write(temp, 0, bytesread);
+                Log.i("Received from Server:", bos.toString("utf-8"));
+                String res = bos.toString("utf-8");
+                bos.reset();
+
+                if (res != null && res != "") {
+                    Message msg = cHandler.obtainMessage();
+                    Bundle b = new Bundle();
+                    b.putString("message",res);
+                    msg.setData(b);
+                    cHandler.sendMessage(msg);
+                }
+            }
+            Log.i("Client","Connection Close");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
@@ -804,38 +888,68 @@ public class MenuActivity extends Activity {
         editTextLabelsBottom("", "", "");
     }
 
+    public void translateHand() {
+        final Animation anim = new TranslateAnimation(xCurrentPos, xCurrentPos, yCurrentPos, yCurrentPos - 130);
+        anim.setDuration(1500);
+        anim.setFillAfter(false);
+        anim.setFillEnabled(false);
+        //anim.setRepeatCount(Animation.INFINITE);
+        //anim.setRepeatMode(Animation.INFINITE);
+
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        logoFocus.startAnimation(anim);
+                    }
+                }, 1000);
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+
+        logoFocus.startAnimation(anim);
+    }
+
 
     public void runTest() {
         // Execute some code after 2 seconds have passed
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
-                setPicture("0x");
+                setPicture("1x");
 
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     public void run() {
-                        setPicture("01");
+                        setPicture("-1");
 
                         Handler handler = new Handler();
                         handler.postDelayed(new Runnable() {
                             public void run() {
-                                setPicture("02");
+                                setPicture("1x");
 
                                 Handler handler = new Handler();
                                 handler.postDelayed(new Runnable() {
                                     public void run() {
-                                        setPicture("021");
+                                        setPicture("-1");
 
                                         Handler handler = new Handler();
                                         handler.postDelayed(new Runnable() {
                                             public void run() {
-                                                setPicture("022");
+                                                setPicture("1x");
 
                                                 Handler handler = new Handler();
                                                 handler.postDelayed(new Runnable() {
                                                     public void run() {
-                                                        setPicture("021");
+                                                        setPicture("-1");
                                                     }
                                                 }, 2000);
                                             }

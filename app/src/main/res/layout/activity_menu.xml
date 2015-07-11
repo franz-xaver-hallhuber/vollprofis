@@ -9,6 +9,7 @@
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
 
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,7 +17,15 @@
         android:layout_gravity="center"
         style="@style/FullscreenTheme"
         android:background="#333333"
-        android:src="@drawable/intro01"/>
+        android:src="@drawable/intro"/>
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:id="@+id/hand"
+        android:src="@drawable/hand02"
+        android:layout_gravity="center"
+        android:layout_marginTop="80dp"/>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -62,6 +71,7 @@
             android:layout_marginLeft="50dp"/>
 
     </RelativeLayout>
+
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -104,6 +114,8 @@
             android:gravity="center"
             android:layout_toRightOf="@+id/option_center"
             android:layout_marginLeft="50dp"/>
+
+
 
     </RelativeLayout>
 
