@@ -156,7 +156,7 @@ public class MenuActivity extends Activity {
 
         test = (TextView) findViewById(R.id.textView);
 
-        runTest();
+        //runTest();
 
         cHandler = new Handler(Looper.getMainLooper()) {
             @Override
