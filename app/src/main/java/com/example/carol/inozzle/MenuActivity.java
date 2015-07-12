@@ -90,10 +90,8 @@ public class MenuActivity extends Activity {
     public static Integer yCurrentPos;
     public static ImageView logoFocus;
     public static String code;
-    public static boolean translate;
-
-
-
+    public static Animation anim;
+    public static Thread thread;
 
     //screen elements
     TextView test;
@@ -102,7 +100,6 @@ public class MenuActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        translate = true;
         setContentView(R.layout.activity_menu);
         code = "";
         logoFocus = (ImageView) findViewById(R.id.hand);
@@ -128,6 +125,34 @@ public class MenuActivity extends Activity {
         dial = MediaPlayer.create(getApplicationContext(), R.raw.dial);
         route = MediaPlayer.create(getApplicationContext(), R.raw.route);
 
+        anim = new TranslateAnimation(xCurrentPos, xCurrentPos, yCurrentPos, yCurrentPos - 140);
+        anim.setDuration(1500);
+        anim.setFillAfter(false);
+        anim.setFillEnabled(false);
+        //anim.setRepeatCount(Animation.INFINITE);
+        //anim.setRepeatMode(Animation.INFINITE);
+
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+               /* new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        logoFocus.startAnimation(anim);
+                    }
+                }, 1000);*/
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
 
         test = (TextView) findViewById(R.id.textView);
 
@@ -195,15 +220,15 @@ public class MenuActivity extends Activity {
         AlertDialog dialog = builder.create();
         dialog.show();
 
-
-
     }
 
     public void setPicture(String s) {
         Log.i("ManiUI", "Set Picture " + s);
-        logoFocus.setVisibility(View.GONE);
+        //logoFocus.getAnimation().cancel();
         logoFocus.clearAnimation();
-        translate = false;
+        logoFocus.setVisibility(View.GONE);
+        logoFocus.setVisibility(View.INVISIBLE);
+        thread.interrupt();
         //test.setText(s);
 
         switch (s) {
@@ -219,8 +244,8 @@ public class MenuActivity extends Activity {
                 editTextLabelsMain("", "", "");
                 replace(R.drawable.intro);
                 logoFocus.setVisibility(View.VISIBLE);
-                translate = true;
-                translateHand();
+                logoFocus.startAnimation(anim);
+
                 break;
             case "0x":
                 //telephone
@@ -888,36 +913,6 @@ public class MenuActivity extends Activity {
         editTextLabelsBottom("", "", "");
     }
 
-    public void translateHand() {
-        final Animation anim = new TranslateAnimation(xCurrentPos, xCurrentPos, yCurrentPos, yCurrentPos - 130);
-        anim.setDuration(1500);
-        anim.setFillAfter(false);
-        anim.setFillEnabled(false);
-        //anim.setRepeatCount(Animation.INFINITE);
-        //anim.setRepeatMode(Animation.INFINITE);
-
-        anim.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        logoFocus.startAnimation(anim);
-                    }
-                }, 1000);
-            }
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-
-        logoFocus.startAnimation(anim);
-    }
-
 
     public void runTest() {
         // Execute some code after 2 seconds have passed
@@ -939,29 +934,29 @@ public class MenuActivity extends Activity {
                                 Handler handler = new Handler();
                                 handler.postDelayed(new Runnable() {
                                     public void run() {
-                                        setPicture("-1");
+                                        setPicture("2x");
 
                                         Handler handler = new Handler();
                                         handler.postDelayed(new Runnable() {
                                             public void run() {
-                                                setPicture("1x");
+                                                setPicture("-1");
 
                                                 Handler handler = new Handler();
                                                 handler.postDelayed(new Runnable() {
                                                     public void run() {
-                                                        setPicture("-1");
+                                                        setPicture("1x");
                                                     }
-                                                }, 2000);
+                                                }, 3000);
                                             }
-                                        }, 2000);
+                                        }, 3000);
                                     }
-                                }, 2000);
+                                }, 3000);
                             }
-                        }, 2000);
+                        }, 3000);
                     }
-                }, 2000);
+                }, 3000);
             }
-        }, 2000);
+        }, 3000);
     }
 }
 
