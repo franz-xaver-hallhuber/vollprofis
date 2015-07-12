@@ -84,14 +84,21 @@ public class MenuActivity extends Activity {
 
     public static MediaPlayer radio1;
     public static MediaPlayer radio2;
+    public static MediaPlayer radio3;
     public static MediaPlayer route;
+    public static MediaPlayer resume;
+    public static MediaPlayer beginning;
+    public static MediaPlayer random;
     public static MediaPlayer dial;
+    public static MediaPlayer usb;
+    public static MediaPlayer bluetooth;
+    public static MediaPlayer aux;
     public static Integer xCurrentPos;
     public static Integer yCurrentPos;
     public static ImageView logoFocus;
     public static String code;
     public static Animation anim;
-    public static Thread thread;
+    public static Integer count;
 
     //screen elements
     TextView test;
@@ -122,37 +129,23 @@ public class MenuActivity extends Activity {
 
         radio1 = MediaPlayer.create(getApplicationContext(), R.raw.radio1);
         radio2 = MediaPlayer.create(getApplicationContext(), R.raw.radio2);
+        radio3 = MediaPlayer.create(getApplicationContext(), R.raw.radio3);
         dial = MediaPlayer.create(getApplicationContext(), R.raw.dial);
         route = MediaPlayer.create(getApplicationContext(), R.raw.route);
+        beginning = MediaPlayer.create(getApplicationContext(), R.raw.beginning);
+        resume = MediaPlayer.create(getApplicationContext(), R.raw.resume);
+        random = MediaPlayer.create(getApplicationContext(), R.raw.random);
+        usb = MediaPlayer.create(getApplicationContext(), R.raw.usb);
+        aux = MediaPlayer.create(getApplicationContext(), R.raw.aux);
+        bluetooth = MediaPlayer.create(getApplicationContext(), R.raw.bluetooth);
 
-        anim = new TranslateAnimation(xCurrentPos, xCurrentPos, yCurrentPos, yCurrentPos - 140);
+
+        anim = new TranslateAnimation(xCurrentPos, xCurrentPos, yCurrentPos, yCurrentPos - 150);
         anim.setDuration(1500);
         anim.setFillAfter(false);
         anim.setFillEnabled(false);
-        //anim.setRepeatCount(Animation.INFINITE);
-        //anim.setRepeatMode(Animation.INFINITE);
 
-        anim.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-               /* new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        logoFocus.startAnimation(anim);
-                    }
-                }, 1000);*/
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
+        count = 0;
 
         test = (TextView) findViewById(R.id.textView);
 
@@ -164,10 +157,12 @@ public class MenuActivity extends Activity {
                 String serverInput = (String) msg.getData().getString("message");
 
                 if (null != serverInput) {
-                    if(!code.equals(serverInput)) {
+                    if(!code.equals(serverInput) || count == 15) {
                         setPicture(serverInput);
+                        count = 0;
                     }
                     code = serverInput;
+                    count++;
                 }
 
 
@@ -253,7 +248,7 @@ public class MenuActivity extends Activity {
                 resetTextColorMain();
                 replace(R.drawable.call);
                 editTextLabelsTop("","","");
-                editTextLabelsMain("Redial", "Missed Calls", "Favorites");
+                editTextLabelsMain( "Favorites","Redial", "Missed Calls");
                 break;
             case "1x":
                 //media
@@ -611,6 +606,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("CD", "External Devices", "Radio");
                 finalSelection("Start from beginning");
                 //highlightTextLabel(R.id.bottom_left);
+                beginning.start();
                 break;
             case "101x":
                 //Continue
@@ -618,6 +614,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("CD", "External Devices", "Radio");
                 finalSelection("Continue");
                 //highlightTextLabel(R.id.bottom_left);
+                resume.start();
                 break;
             case "102x":
                 //Random
@@ -625,6 +622,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("CD", "External Devices", "Radio");
                 finalSelection("Random");
                 //highlightTextLabel(R.id.bottom_left);
+                random.start();
                 break;
             case "110x":
                 //USB
@@ -632,6 +630,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("CD", "External Devices", "Radio");
                 finalSelection("USB");
                 //highlightTextLabel(R.id.bottom_center);
+                usb.start();
                 break;
             case "111x":
                 //AUX
@@ -639,6 +638,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("CD", "External Devices", "Radio");
                 finalSelection("AUX");
                 //highlightTextLabel(R.id.bottom_center);
+                aux.start();
                 break;
             case "112x":
                 //Bluetooth
@@ -646,6 +646,7 @@ public class MenuActivity extends Activity {
                 //editTextLabelsBottom("CD", "External Devices", "Radio");
                 finalSelection("Bluetooth");
                 //highlightTextLabel(R.id.bottom_center);
+                bluetooth.start();
                 break;
             case "120x":
                 //Sight Ways 33.3
@@ -669,7 +670,7 @@ public class MenuActivity extends Activity {
                 replace(R.drawable.finalmedia);
                 //editTextLabelsBottom("CD", "External Devices", "Radio");
                 finalSelection("Mercury 666.6");
-                radio2.start();
+                radio3.start();
                 //highlightTextLabel(R.id.bottom_right);
                 break;
             case "200x":
@@ -941,12 +942,6 @@ public class MenuActivity extends Activity {
                                             public void run() {
                                                 setPicture("-1");
 
-                                                Handler handler = new Handler();
-                                                handler.postDelayed(new Runnable() {
-                                                    public void run() {
-                                                        setPicture("1x");
-                                                    }
-                                                }, 3000);
                                             }
                                         }, 3000);
                                     }
