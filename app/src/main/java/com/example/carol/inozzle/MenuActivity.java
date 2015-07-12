@@ -228,7 +228,7 @@ public class MenuActivity extends Activity {
         logoFocus.clearAnimation();
         logoFocus.setVisibility(View.GONE);
         logoFocus.setVisibility(View.INVISIBLE);
-        thread.interrupt();
+        //thread.interrupt();
         //test.setText(s);
 
         switch (s) {
